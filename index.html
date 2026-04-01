@@ -199,6 +199,21 @@
       100%{transform:translateX(120%)}
     }
 
+    @keyframes tgGlow {
+      0%,100%{
+        box-shadow:
+          0 0 0 1px rgba(192,132,252,.12) inset,
+          0 10px 30px rgba(139,92,246,.18),
+          0 0 22px rgba(168,85,247,.22);
+      }
+      50%{
+        box-shadow:
+          0 0 0 1px rgba(236,72,153,.18) inset,
+          0 14px 38px rgba(139,92,246,.24),
+          0 0 34px rgba(217,70,239,.40);
+      }
+    }
+
     .hero{
       display:grid;
       grid-template-columns:1.25fr .75fr;
@@ -374,23 +389,44 @@
       gap:10px;
       padding:15px 22px;
       border-radius:18px;
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.88);
+      background:linear-gradient(135deg, rgba(139,92,246,.22), rgba(217,70,239,.18));
+      border:1px solid rgba(192,132,252,.42);
+      color:#fff;
       text-decoration:none;
       font-weight:700;
       font-size:14px;
       backdrop-filter:blur(18px) saturate(170%);
       -webkit-backdrop-filter:blur(18px) saturate(170%);
       transition:all .25s ease;
-      box-shadow:0 10px 30px rgba(0,0,0,.18);
+      box-shadow:
+        0 0 0 1px rgba(192,132,252,.12) inset,
+        0 10px 30px rgba(139,92,246,.18),
+        0 0 22px rgba(168,85,247,.22);
+      position:relative;
+      overflow:hidden;
+      animation:tgGlow 2.8s ease-in-out infinite;
+    }
+
+    .btn-secondary::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.28) 50%, transparent 100%);
+      transform:translateX(-120%);
+      transition:transform .7s ease;
     }
 
     .btn-secondary:hover{
-      transform:translateY(-3px);
-      border-color:rgba(192,132,252,.35);
-      background:rgba(168,85,247,.12);
-      box-shadow:0 16px 40px rgba(168,85,247,.14);
+      transform:translateY(-4px) scale(1.03);
+      border-color:rgba(236,72,153,.55);
+      box-shadow:
+        0 0 0 1px rgba(236,72,153,.16) inset,
+        0 18px 44px rgba(168,85,247,.28),
+        0 0 34px rgba(217,70,239,.42);
+    }
+
+    .btn-secondary:hover::before{
+      transform:translateX(120%);
     }
 
     .side{
@@ -729,6 +765,7 @@
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:16px;
+      align-items:start;
     }
 
     .vid-card{
@@ -744,6 +781,13 @@
       box-shadow:0 0 0 rgba(0,0,0,0);
       will-change:transform;
       animation:cardPop .8s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    /* Вертикальная карточка для Telegram Bot Motion */
+    .vid-card-vertical{
+      aspect-ratio:9/16;
+      max-width:320px;
+      margin:0 auto;
     }
 
     .vid-card:hover{
@@ -1023,6 +1067,11 @@
         border-radius:18px;
       }
 
+      .vid-card-vertical{
+        aspect-ratio:9/16;
+        max-width:100%;
+      }
+
       .vid-overlay{
         padding:12px;
       }
@@ -1269,7 +1318,7 @@
           </div>
         </div>
 
-        <div class="vid-card" onclick="playVideo(this,'PV6MbWrp5ug')" style="animation-delay:.18s">
+        <div class="vid-card vid-card-vertical" onclick="playVideo(this,'PV6MbWrp5ug')" style="animation-delay:.18s">
           <div class="vid-thumb" style="background-image:url('https://img.youtube.com/vi/PV6MbWrp5ug/maxresdefault.jpg')"></div>
           <div class="vid-overlay">
             <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
