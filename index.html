@@ -94,7 +94,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(139, 92, 246, 0.1);
     }
 
-    /* Новая геометрия блоков */
+    /* Геометрия блоков */
     .profile-card { grid-column: span 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
     .hero-card { grid-column: span 2; display: flex; flex-direction: column; justify-content: center; }
     
@@ -103,19 +103,32 @@
     
     .collab-card { grid-column: span 3; display: grid; grid-template-columns: 1fr 1.5fr; gap: 0; padding: 0; overflow: hidden; }
     
-    /* Сетка для видео-портфолио */
+    /* ИСПРАВЛЕНО: Сетка для видео-портфолио и их позиционирование */
     .video-card { 
       grid-column: span 2; 
       padding: 0; 
       cursor: pointer; 
-      aspect-ratio: 16 / 9; /* Идеальный размер YouTube, убраны рамки */
+      aspect-ratio: 16 / 9; 
       border-radius: 16px;
+      position: relative;
+      display: block;
+      overflow: hidden;
     }
     .video-card.vertical { 
       grid-column: span 1; 
-      grid-row: span 2; /* Занимает 2 ряда по вертикали, ложась рядом с горизонтальными */
-      aspect-ratio: unset; 
-      height: 100%; 
+      grid-row: span 2; 
+      aspect-ratio: 9 / 16;
+      height: auto; 
+    }
+
+    .vid-thumb {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0; /* Жестко привязываем к краям карточки */
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.5s;
     }
 
     /* Typography & Elements */
@@ -232,25 +245,18 @@
     }
     .stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
 
-    /* Video Player */
-    .vid-thumb {
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      position: absolute;
-      transition: transform 0.5s;
-    }
+    /* Video Player Overlay */
     .bento-card:hover .vid-thumb { transform: scale(1.03); }
     .vid-overlay {
       position: absolute;
-      inset: 0;
+      inset: 0; /* Заменяет top:0; left:0; right:0; bottom:0; */
       background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       padding: 24px;
       transition: 0.3s;
+      pointer-events: none; /* Чтобы не мешал клику */
     }
     .play-icon {
       position: absolute;
@@ -273,12 +279,23 @@
     .vid-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
     .vid-cat { font-size: 13px; color: var(--purple-light); font-weight: 600; text-transform: uppercase; }
 
-    /* Iframe Reset */
-    iframe { border: none; width: 100%; height: 100%; display: block; margin: 0; padding: 0; }
-
     /* Collab Card Details */
     .collab-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
-    .collab-video { background: #000; width: 100%; height: 100%; display: flex; aspect-ratio: 16/9; }
+    .collab-video { 
+      background: #000; 
+      width: 100%; 
+      height: 100%; 
+      display: block; 
+      aspect-ratio: 16/9; 
+      position: relative;
+    }
+    /* ИСПРАВЛЕНО: Жесткие рамки для YouTube Iframe */
+    .collab-video iframe { 
+      position: absolute; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      border: none; 
+    }
 
     /* Profile Card Details */
     .profile-img {
@@ -331,7 +348,7 @@
     @media (max-width: 900px) {
       .container { grid-template-columns: repeat(2, 1fr); }
       .profile-card, .hero-card, .skills-card, .stats-card, .video-card { grid-column: span 2; }
-      .video-card.vertical { grid-row: auto; aspect-ratio: 9/16; max-width: 340px; margin: 0 auto; width: 100%; }
+      .video-card.vertical { grid-row: auto; aspect-ratio: 9/16; max-width: 320px; margin: 0 auto; width: 100%; }
       .collab-card { grid-column: span 2; grid-template-columns: 1fr; }
       .section-title, footer { grid-column: span 2; }
       .stats-card { flex-direction: row; }
@@ -350,7 +367,7 @@
       .btn { width: 100%; margin-top: 20px; }
       .collab-info { padding: 24px; border-bottom: 1px solid var(--border); }
       
-      .video-card.vertical { aspect-ratio: 9/16; max-width: 300px; }
+      .video-card.vertical { aspect-ratio: 9/16; max-width: 280px; }
       .section-title { margin: 24px 0 0; }
       footer { flex-direction: column; text-align: center; gap: 16px; padding: 20px; }
     }
@@ -472,13 +489,13 @@
   </main>
 
   <script>
-    // YouTube Video Player logic
+    // ИСПРАВЛЕНО: При генерации iframe добавляется абсолютное позиционирование с нулевыми отступами
     function playVid(card, id) {
       const thumb = card.querySelector('.vid-thumb');
       const overlay = card.querySelector('.vid-overlay');
       
       thumb.style.backgroundImage = 'none';
-      thumb.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+      thumb.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1" allowfullscreen allow="autoplay; encrypted-media" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>';
       
       overlay.style.opacity = '0';
       overlay.style.pointerEvents = 'none';
