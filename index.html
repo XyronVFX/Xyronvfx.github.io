@@ -57,12 +57,12 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
-    /* Layout / Bento Grid */
+    /* Layout / 3-Column Bento Grid */
     .container {
       width: 100%;
       max-width: 1100px;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
       z-index: 1;
     }
@@ -70,8 +70,8 @@
     .bento-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 28px;
-      padding: 32px;
+      border-radius: 24px;
+      padding: 28px;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -94,14 +94,29 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(139, 92, 246, 0.1);
     }
 
-    /* Grid Spans */
-    .hero-card { grid-column: span 3; display: flex; flex-direction: column; justify-content: center; }
+    /* Новая геометрия блоков */
     .profile-card { grid-column: span 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .skills-card { grid-column: span 2; }
-    .stats-card { grid-column: span 2; display: flex; justify-content: space-around; align-items: center; }
-    .collab-card { grid-column: span 4; display: grid; grid-template-columns: 1fr 1.5fr; gap: 0; padding: 0; overflow: hidden; }
-    .video-card { grid-column: span 2; padding: 0; cursor: pointer; aspect-ratio: 16/10; }
-    .video-card.vertical { grid-column: span 1; aspect-ratio: 9/16; }
+    .hero-card { grid-column: span 2; display: flex; flex-direction: column; justify-content: center; }
+    
+    .stats-card { grid-column: span 1; display: flex; flex-direction: column; justify-content: center; gap: 24px; }
+    .skills-card { grid-column: span 2; display: flex; flex-direction: column; justify-content: center; }
+    
+    .collab-card { grid-column: span 3; display: grid; grid-template-columns: 1fr 1.5fr; gap: 0; padding: 0; overflow: hidden; }
+    
+    /* Сетка для видео-портфолио */
+    .video-card { 
+      grid-column: span 2; 
+      padding: 0; 
+      cursor: pointer; 
+      aspect-ratio: 16 / 9; /* Идеальный размер YouTube, убраны рамки */
+      border-radius: 16px;
+    }
+    .video-card.vertical { 
+      grid-column: span 1; 
+      grid-row: span 2; /* Занимает 2 ряда по вертикали, ложась рядом с горизонтальными */
+      aspect-ratio: unset; 
+      height: 100%; 
+    }
 
     /* Typography & Elements */
     .status-badge {
@@ -128,18 +143,18 @@
 
     h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(32px, 5vw, 64px);
+      font-size: clamp(32px, 4.5vw, 54px);
       font-weight: 800;
       line-height: 1.1;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
       margin-bottom: 16px;
     }
     
     h2 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(22px, 3vw, 32px);
+      font-size: clamp(22px, 3vw, 28px);
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .gradient-text {
@@ -201,14 +216,21 @@
     }
 
     /* Stats */
-    .stat-item { text-align: center; }
+    .stat-item { 
+      text-align: center; 
+      background: rgba(0,0,0,0.2); 
+      padding: 16px; 
+      border-radius: 16px; 
+      border: 1px solid rgba(255,255,255,0.03);
+    }
     .stat-num {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(36px, 5vw, 48px);
+      font-size: 38px;
       font-weight: 800;
       color: #fff;
+      line-height: 1;
     }
-    .stat-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
 
     /* Video Player */
     .vid-thumb {
@@ -216,7 +238,7 @@
       height: 100%;
       background-size: cover;
       background-position: center;
-      position: relative;
+      position: absolute;
       transition: transform 0.5s;
     }
     .bento-card:hover .vid-thumb { transform: scale(1.03); }
@@ -251,10 +273,12 @@
     .vid-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
     .vid-cat { font-size: 13px; color: var(--purple-light); font-weight: 600; text-transform: uppercase; }
 
+    /* Iframe Reset */
+    iframe { border: none; width: 100%; height: 100%; display: block; margin: 0; padding: 0; }
+
     /* Collab Card Details */
     .collab-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
-    .collab-video { background: #000; width: 100%; height: 100%; display: flex; }
-    .collab-video iframe { width: 100%; height: 100%; border: none; aspect-ratio: 16/9; }
+    .collab-video { background: #000; width: 100%; height: 100%; display: flex; aspect-ratio: 16/9; }
 
     /* Profile Card Details */
     .profile-img {
@@ -263,6 +287,7 @@
       background: linear-gradient(135deg, var(--purple), var(--pink));
       padding: 3px;
       margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
     }
     .profile-img div {
       width: 100%; height: 100%;
@@ -272,7 +297,7 @@
 
     /* Section Headers */
     .section-title {
-      grid-column: span 4;
+      grid-column: span 3;
       display: flex;
       align-items: center;
       gap: 20px;
@@ -283,7 +308,7 @@
 
     /* Footer */
     footer {
-      grid-column: span 4;
+      grid-column: span 3;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -303,47 +328,31 @@
     }
 
     /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
-    @media (max-width: 1024px) {
+    @media (max-width: 900px) {
       .container { grid-template-columns: repeat(2, 1fr); }
-      .hero-card, .profile-card, .skills-card, .stats-card { grid-column: span 2; }
+      .profile-card, .hero-card, .skills-card, .stats-card, .video-card { grid-column: span 2; }
+      .video-card.vertical { grid-row: auto; aspect-ratio: 9/16; max-width: 340px; margin: 0 auto; width: 100%; }
       .collab-card { grid-column: span 2; grid-template-columns: 1fr; }
-      .video-card { grid-column: span 2; }
-      .video-card.vertical { grid-column: span 1; }
       .section-title, footer { grid-column: span 2; }
+      .stats-card { flex-direction: row; }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
       body { padding: 16px 12px; }
       .container { grid-template-columns: 1fr; gap: 16px; }
-      .hero-card, .profile-card, .skills-card, .stats-card, .collab-card, .video-card, .video-card.vertical, .section-title, footer { grid-column: span 1; }
+      .profile-card, .hero-card, .skills-card, .stats-card, .collab-card, .video-card, .section-title, footer { grid-column: span 1; }
       
-      .bento-card { padding: 24px; border-radius: 24px; }
+      .bento-card { padding: 20px; border-radius: 20px; }
       
-      h1 { font-size: 34px; margin-bottom: 12px; }
-      h2 { font-size: 24px; margin-bottom: 12px; }
-      .subtext { font-size: 15px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 22px; }
       
-      .btn { width: 100%; margin-top: 20px; } /* Кнопка на всю ширину для удобства пальца */
-      
+      .btn { width: 100%; margin-top: 20px; }
       .collab-info { padding: 24px; border-bottom: 1px solid var(--border); }
       
-      /* Исправление высоты видео на мобильных */
-      .collab-video { aspect-ratio: 16/9; display: block; }
-      .collab-video iframe { height: 100%; width: 100%; }
-
-      /* Статистика в ряд на мобильных */
-      .stats-card { flex-direction: row; justify-content: space-around; padding: 24px 16px; }
-      
-      /* Вертикальное видео по центру */
-      .video-card.vertical {
-        max-width: 320px;
-        margin: 0 auto;
-        width: 100%;
-      }
-      
+      .video-card.vertical { aspect-ratio: 9/16; max-width: 300px; }
       .section-title { margin: 24px 0 0; }
-      
-      footer { flex-direction: column; text-align: center; gap: 16px; padding: 24px; }
+      footer { flex-direction: column; text-align: center; gap: 16px; padding: 20px; }
     }
   </style>
 </head>
@@ -354,37 +363,22 @@
 
   <main class="container">
     
+    <div class="bento-card profile-card">
+      <div class="profile-img"><div></div></div>
+      <h2>@XyronVFX</h2>
+      <p class="subtext" style="font-size: 14px;">Motion & VFX Editor</p>
+    </div>
+
     <div class="bento-card hero-card">
       <div class="status-badge">
         <span class="status-dot"></span>
         Доступен для проектов
       </div>
       <h1>Монтажёр с опытом<br><span class="gradient-text">1+ года</span></h1>
-      <p class="subtext">Создаю видео с идеальной динамикой и Apple-минимализмом. Motion graphics, reels, shorts и реклама, которые удерживают внимание до последней секунды.</p>
+      <p class="subtext">Создаю видео с идеальной динамикой и Apple-минимализмом. Удерживаю внимание до последней секунды.</p>
       <a href="https://t.me/Xyronvfx" target="_blank" class="btn">
         Обсудить проект
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.89 8.22l-1.97 9.28c-.14.65-.53.81-1.07.51l-2.96-2.18-1.43 1.38c-.16.16-.29.29-.59.29l.21-3.02 5.5-4.97c.24-.22-.05-.34-.37-.13l-6.8 4.28-2.93-.91c-.64-.2-.65-.64.13-.95l11.45-4.42c.53-.19 1.01.12.83.84z"/></svg>
       </a>
-    </div>
-
-    <div class="bento-card profile-card">
-      <div class="profile-img">
-        <div></div>
-      </div>
-      <h2>@XyronVFX</h2>
-      <p class="subtext" style="font-size: 14px;">Motion Editor & VFX Artist</p>
-    </div>
-
-    <div class="bento-card skills-card">
-      <h2>Экспертиза</h2>
-      <p class="subtext" style="font-size: 15px;">Работаю в Premiere Pro и After Effects. Фокус на качество, саунд-дизайн и стильную типографику.</p>
-      <div class="skills-wrapper">
-        <span class="skill-tag">Видеомонтаж</span>
-        <span class="skill-tag">Motion Design</span>
-        <span class="skill-tag">VFX</span>
-        <span class="skill-tag">Цветокоррекция</span>
-        <span class="skill-tag">Reels / Shorts</span>
-      </div>
     </div>
 
     <div class="bento-card stats-card">
@@ -395,6 +389,18 @@
       <div class="stat-item">
         <div class="stat-num gradient-text">100%</div>
         <div class="stat-label">Отдача</div>
+      </div>
+    </div>
+
+    <div class="bento-card skills-card">
+      <h2>Мой стек & Фокус</h2>
+      <p class="subtext" style="font-size: 15px;">Работаю в Premiere Pro и After Effects. Делаю упор на качественный саунд-дизайн, чистые переходы и стильную типографику.</p>
+      <div class="skills-wrapper">
+        <span class="skill-tag">Видеомонтаж</span>
+        <span class="skill-tag">Motion Design</span>
+        <span class="skill-tag">VFX</span>
+        <span class="skill-tag">Цветокоррекция</span>
+        <span class="skill-tag">Shorts</span>
       </div>
     </div>
 
@@ -436,17 +442,6 @@
       </div>
     </div>
 
-    <div class="bento-card video-card" onclick="playVid(this, 'j7zErAALfuc')">
-      <div class="vid-thumb" style="background-image: url('https://img.youtube.com/vi/j7zErAALfuc/maxresdefault.jpg')"></div>
-      <div class="vid-overlay">
-        <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div>
-          <div class="vid-title">Portals Motion Style</div>
-          <div class="vid-cat">Motion / VFX</div>
-        </div>
-      </div>
-    </div>
-
     <div class="bento-card video-card vertical" onclick="playVid(this, 'PV6MbWrp5ug')">
       <div class="vid-thumb" style="background-image: url('https://img.youtube.com/vi/PV6MbWrp5ug/maxresdefault.jpg')"></div>
       <div class="vid-overlay">
@@ -454,6 +449,17 @@
         <div>
           <div class="vid-title">Telegram Bot</div>
           <div class="vid-cat">Shorts Format</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento-card video-card" onclick="playVid(this, 'j7zErAALfuc')">
+      <div class="vid-thumb" style="background-image: url('https://img.youtube.com/vi/j7zErAALfuc/maxresdefault.jpg')"></div>
+      <div class="vid-overlay">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div>
+          <div class="vid-title">Portals Motion Style</div>
+          <div class="vid-cat">Motion / VFX</div>
         </div>
       </div>
     </div>
@@ -472,7 +478,7 @@
       const overlay = card.querySelector('.vid-overlay');
       
       thumb.style.backgroundImage = 'none';
-      thumb.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1" allowfullscreen allow="autoplay; encrypted-media" style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>';
+      thumb.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
       
       overlay.style.opacity = '0';
       overlay.style.pointerEvents = 'none';
@@ -480,14 +486,12 @@
       card.style.cursor = 'default';
     }
 
-    // --- Логика Интерактивного Фона "Звёздная Пыль" ---
+    // --- Логика Интерактивного Фона ---
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     
     let width, height;
     let particles = [];
-    
-    // Настройки мыши/тача
     const mouse = { x: -1000, y: -1000, radius: 150 };
     let scrollVelocity = 0;
     let lastScrollY = window.scrollY;
@@ -495,7 +499,6 @@
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-      // Пересоздаем частицы при изменении ориентации экрана
       initParticles();
     }
     window.addEventListener('resize', resize);
@@ -505,7 +508,6 @@
         this.x = Math.random() * width;
         this.y = Math.random() * height;
         this.size = Math.random() * 2.5 + 0.5; 
-        
         this.baseSpeedX = (Math.random() - 0.5) * (this.size * 0.3);
         this.baseSpeedY = (Math.random() - 0.5) * (this.size * 0.3);
         this.vx = this.baseSpeedX;
@@ -516,7 +518,6 @@
       }
 
       update() {
-        // Реакция на курсор / палец
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
@@ -525,18 +526,13 @@
           const forceDirectionX = dx / distance;
           const forceDirectionY = dy / distance;
           const force = (mouse.radius - distance) / mouse.radius;
-          
           this.vx -= forceDirectionX * force * 0.5;
           this.vy -= forceDirectionY * force * 0.5;
         }
 
-        // Реакция на скролл
         this.y += scrollVelocity * (this.size * 0.5);
-
-        // Возврат к нормальной скорости
         this.vx += (this.baseSpeedX - this.vx) * 0.05;
         this.vy += (this.baseSpeedY - this.vy) * 0.05;
-
         this.x += this.vx;
         this.y += this.vy;
 
@@ -549,14 +545,12 @@
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        
         if (this.size > 1.5) {
           ctx.shadowBlur = this.size * 4;
           ctx.shadowColor = this.color;
         } else {
           ctx.shadowBlur = 0;
         }
-        
         ctx.fillStyle = this.color;
         ctx.fill();
       }
@@ -564,51 +558,28 @@
 
     function initParticles() {
       particles = [];
-      // Ограничиваем максимальное количество частиц для слабых телефонов
       let numberOfParticles = Math.floor((width * height) / 12000);
       if (numberOfParticles > 150) numberOfParticles = 150; 
-      
       for (let i = 0; i < numberOfParticles; i++) {
         particles.push(new Particle());
       }
     }
     
-    resize(); // Вызываем один раз при старте
+    resize();
 
     function animate() {
       ctx.clearRect(0, 0, width, height);
-      
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-
+      particles.forEach(p => { p.update(); p.draw(); });
       scrollVelocity *= 0.9;
       requestAnimationFrame(animate);
     }
     animate();
 
-    // Мышь (ПК)
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-    window.addEventListener('mouseout', () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    });
-
-    // Тач (Смартфоны)
-    window.addEventListener('touchmove', (e) => {
-      mouse.x = e.touches[0].clientX;
-      mouse.y = e.touches[0].clientY;
-    });
-    window.addEventListener('touchend', () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    });
-
-    // Скролл
+    window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+    window.addEventListener('mouseout', () => { mouse.x = -1000; mouse.y = -1000; });
+    window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+    window.addEventListener('touchend', () => { mouse.x = -1000; mouse.y = -1000; });
+    
     window.addEventListener('scroll', () => {
       let currentScrollY = window.scrollY;
       scrollVelocity = (lastScrollY - currentScrollY) * 0.15;
