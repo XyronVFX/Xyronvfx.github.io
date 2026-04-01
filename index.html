@@ -35,37 +35,25 @@
       padding: 40px 20px;
     }
 
-    /* Ambient Background */
-    .bg-glow {
+    /* Интерактивный фон Canvas */
+    #particle-canvas {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
       pointer-events: none;
-      z-index: -1;
       background: var(--bg);
-      overflow: hidden;
-    }
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.4;
-      animation: float 10s ease-in-out infinite alternate;
-    }
-    .orb-1 { width: 400px; height: 400px; background: rgba(139, 92, 246, 0.3); top: -100px; left: -100px; }
-    .orb-2 { width: 500px; height: 500px; background: rgba(217, 70, 239, 0.15); bottom: -100px; right: -100px; animation-delay: -5s; }
-    .orb-3 { width: 300px; height: 300px; background: rgba(168, 85, 247, 0.2); top: 40%; left: 40%; }
-
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(30px, -50px); }
     }
 
+    /* Легкий текстурный шум поверх холста для матовости */
     .noise {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: -1;
-      opacity: 0.04;
+      opacity: 0.03;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
@@ -114,7 +102,6 @@
     .collab-card { grid-column: span 4; display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; padding: 0; overflow: hidden; }
     .video-card { grid-column: span 2; padding: 0; cursor: pointer; aspect-ratio: 16/10; }
     .video-card.vertical { grid-column: span 1; aspect-ratio: 9/16; }
-    .full-span { grid-column: span 4; }
 
     /* Typography & Elements */
     .status-badge {
@@ -321,14 +308,12 @@
       .collab-card { grid-column: span 2; grid-template-columns: 1fr; }
       .video-card { grid-column: span 2; }
       .video-card.vertical { grid-column: span 1; }
-      .full-span { grid-column: span 2; }
-      .section-title { grid-column: span 2; }
-      footer { grid-column: span 2; }
+      .section-title, footer { grid-column: span 2; }
     }
 
     @media (max-width: 600px) {
       .container { grid-template-columns: 1fr; gap: 16px; }
-      .hero-card, .profile-card, .skills-card, .stats-card, .collab-card, .video-card, .video-card.vertical, .full-span, .section-title, footer { grid-column: span 1; }
+      .hero-card, .profile-card, .skills-card, .stats-card, .collab-card, .video-card, .video-card.vertical, .section-title, footer { grid-column: span 1; }
       h1 { font-size: 36px; }
       .collab-info { padding: 24px; }
       .bento-card { padding: 24px; }
@@ -338,11 +323,7 @@
 </head>
 <body>
 
-  <div class="bg-glow">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
+  <canvas id="particle-canvas"></canvas>
   <div class="noise"></div>
 
   <main class="container">
@@ -459,6 +440,7 @@
   </main>
 
   <script>
+    // YouTube Video Player logic
     function playVid(card, id) {
       const thumb = card.querySelector('.vid-thumb');
       const overlay = card.querySelector('.vid-overlay');
@@ -472,14 +454,138 @@
       card.style.cursor = 'default';
     }
 
-    // Лёгкий Parallax-эффект для фоновых сфер при движении мыши (создает глубину)
-    document.addEventListener("mousemove", (e) => {
-      const orbs = document.querySelectorAll(".orb");
-      const x = (e.clientX / window.innerWidth - 0.5) * 40;
-      const y = (e.clientY / window.innerHeight - 0.5) * 40;
+    // --- Логика Интерактивного Фона "Звёздная Пыль" ---
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    let particles = [];
+    
+    // Настройки мыши
+    const mouse = { x: -1000, y: -1000, radius: 150 };
+    let scrollVelocity = 0;
+    let lastScrollY = window.scrollY;
+
+    // Инициализация размеров
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Класс частицы
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        
+        // Разный размер создает эффект глубины (3D)
+        this.size = Math.random() * 2.5 + 0.5; 
+        
+        // Чем больше частица, тем быстрее она плывёт (иллюзия близости)
+        this.baseSpeedX = (Math.random() - 0.5) * (this.size * 0.3);
+        this.baseSpeedY = (Math.random() - 0.5) * (this.size * 0.3);
+        this.vx = this.baseSpeedX;
+        this.vy = this.baseSpeedY;
+        
+        // Цвета (Фиолетовый, Розовый, Белый)
+        const colors = ['rgba(192, 132, 252, 0.6)', 'rgba(217, 70, 239, 0.4)', 'rgba(255, 255, 255, 0.3)'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        // Реакция на мышь (отталкивание)
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < mouse.radius) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const force = (mouse.radius - distance) / mouse.radius;
+          
+          this.vx -= forceDirectionX * force * 0.5;
+          this.vy -= forceDirectionY * force * 0.5;
+        }
+
+        // Реакция на скролл (движение по Y)
+        this.y += scrollVelocity * (this.size * 0.5);
+
+        // Плавный возврат к базовой скорости (трение)
+        this.vx += (this.baseSpeedX - this.vx) * 0.05;
+        this.vy += (this.baseSpeedY - this.vy) * 0.05;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Бесконечный цикл по краям экрана
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        
+        // Эффект свечения для крупных частиц (имитация расфокуса камеры)
+        if (this.size > 1.5) {
+          ctx.shadowBlur = this.size * 4;
+          ctx.shadowColor = this.color;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    // Создаем частицы. Количество зависит от ширины экрана (чтобы не лагало на телефонах)
+    function initParticles() {
+      particles = [];
+      const numberOfParticles = Math.floor((width * height) / 12000); // Оптимальная плотность
+      for (let i = 0; i < numberOfParticles; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    // Анимация
+    function animate() {
+      // Полностью очищаем кадр, чтобы свечение не "размазывалось" слишком сильно
+      ctx.clearRect(0, 0, width, height);
       
-      if(orbs[0]) orbs[0].style.transform = `translate(${x}px, ${y}px)`;
-      if(orbs[1]) orbs[1].style.transform = `translate(${-x}px, ${-y}px)`;
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Затухание инерции скролла
+      scrollVelocity *= 0.9;
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Отслеживание курсора
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+
+    window.addEventListener('mouseout', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
+    // Отслеживание скролла (добавляет инерцию частицам по вертикали)
+    window.addEventListener('scroll', () => {
+      let currentScrollY = window.scrollY;
+      scrollVelocity = (lastScrollY - currentScrollY) * 0.15; // Сила импульса
+      lastScrollY = currentScrollY;
     });
   </script>
 </body>
