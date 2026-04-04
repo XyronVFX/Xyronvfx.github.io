@@ -362,17 +362,15 @@
     }
     .vpn-notice svg { flex-shrink: 0; fill: currentColor; }
 
-    /* АВАТАРКА С ВИДЕО (ИСПРАВЛЕНО ЦЕНТРИРОВАНИЕ) */
+    /* АВАТАРКА С ВИДЕО */
     .profile-img {
       width: 100px; height: 100px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--purple), var(--pink));
       padding: 3px;
-      /* Жесткое центрирование по горизонтали и отступ снизу */
-      margin: 0 auto 16px auto; 
+      margin-bottom: 16px;
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
       position: relative;
-      display: block; /* Для корректной работы margin: auto */
     }
     /* Видео внутри аватарки */
     .profile-img video {
