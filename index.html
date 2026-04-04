@@ -103,6 +103,8 @@
     
     .collab-card { grid-column: span 3; display: grid; grid-template-columns: 1fr 1.5fr; gap: 0; padding: 0; overflow: hidden; }
     
+    .faq-card { grid-column: span 3; display: flex; flex-direction: column; gap: 12px; padding: 24px; }
+
     /* Сетка для видео-портфолио */
     .video-card { 
       grid-column: span 2; 
@@ -212,7 +214,6 @@
       box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
     }
 
-    /* СВЕТЯЩАЯСЯ КНОПКА (TG Portfolio) */
     .btn-glow {
       display: inline-flex;
       align-items: center;
@@ -344,20 +345,82 @@
       border: none; 
     }
 
+    /* FAQ Section */
+    .faq-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .faq-item:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .faq-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      transition: color 0.3s;
+    }
+    .faq-header:hover {
+      color: var(--purple-light);
+    }
+    .faq-icon {
+      width: 20px;
+      height: 20px;
+      position: relative;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+    .faq-icon::before, .faq-icon::after {
+      content: '';
+      position: absolute;
+      background: var(--purple-light);
+      border-radius: 2px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.3s ease;
+    }
+    .faq-icon::before { width: 16px; height: 2px; }
+    .faq-icon::after { width: 2px; height: 16px; }
+    .faq-item.active .faq-icon::after { transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+    .faq-item.active .faq-header { color: var(--purple-light); }
+    
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .faq-item.active .faq-content {
+      max-height: 300px;
+      padding: 0 24px 24px 24px;
+    }
+
     /* ПЛАШКА VPN */
     .vpn-notice {
       grid-column: span 3;
       display: flex;
       align-items: center;
       gap: 12px;
-      background: rgba(245, 158, 11, 0.08); /* Мягкий янтарный фон */
+      background: rgba(245, 158, 11, 0.08);
       border: 1px solid rgba(245, 158, 11, 0.3);
-      color: #fcd34d; /* Янтарный цвет текста */
+      color: #fcd34d;
       padding: 14px 20px;
       border-radius: 16px;
       font-size: 15px;
       font-weight: 500;
-      margin-top: -16px; /* Подтягиваем ближе к заголовку */
+      margin-top: -16px;
       margin-bottom: 8px;
     }
     .vpn-notice svg { flex-shrink: 0; fill: currentColor; }
@@ -372,14 +435,13 @@
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
       position: relative;
     }
-    /* Видео внутри аватарки */
     .profile-img video {
       width: 100%; 
       height: 100%;
       border-radius: 50%;
-      object-fit: cover; /* Обрезает видео квадратом/кругом без искажений */
+      object-fit: cover;
       display: block;
-      background: var(--bg); /* Фон, пока грузится видео */
+      background: var(--bg);
     }
 
     /* Section Headers */
@@ -420,14 +482,14 @@
       .profile-card, .hero-card, .skills-card, .stats-card, .video-card { grid-column: span 2; }
       .video-card.vertical { grid-row: auto; aspect-ratio: 9/16; max-width: 320px; margin: 0 auto; width: 100%; }
       .collab-card { grid-column: span 2; grid-template-columns: 1fr; }
-      .section-title, .vpn-notice, footer { grid-column: span 2; }
+      .section-title, .vpn-notice, footer, .faq-card { grid-column: span 2; }
       .stats-card { flex-direction: row; }
     }
 
     @media (max-width: 600px) {
       body { padding: 16px 12px; }
       .container { grid-template-columns: 1fr; gap: 16px; }
-      .profile-card, .hero-card, .skills-card, .stats-card, .collab-card, .video-card, .section-title, .vpn-notice, footer { grid-column: span 1; }
+      .profile-card, .hero-card, .skills-card, .stats-card, .collab-card, .video-card, .section-title, .vpn-notice, footer, .faq-card { grid-column: span 1; }
       
       .bento-card { padding: 20px; border-radius: 20px; }
       
@@ -443,6 +505,11 @@
       
       .video-card.vertical { aspect-ratio: 9/16; max-width: 280px; }
       .section-title { margin: 24px 0 0; }
+      
+      .faq-header { font-size: 16px; padding: 16px; }
+      .faq-content { padding: 0 16px; font-size: 14px; }
+      .faq-item.active .faq-content { padding: 0 16px 16px 16px; }
+
       footer { flex-direction: column; text-align: center; gap: 16px; padding: 20px; }
     }
   </style>
@@ -571,6 +638,41 @@
       </div>
     </div>
 
+    <div class="section-title" id="faq">
+      <h2>Частые <span class="gradient-text">Вопросы</span></h2>
+      <div class="line"></div>
+    </div>
+
+    <div class="bento-card faq-card">
+      <div class="faq-item">
+        <div class="faq-header">Как происходит процесс работы?<div class="faq-icon"></div></div>
+        <div class="faq-content">
+          <p>Мы обсуждаем ТЗ, референсы и желаемый результат. Я называю точную стоимость и сроки. После внесения предоплаты (50%) я приступаю к черновому монтажу. Затем мы вносим необходимые правки, я делаю финальный рендер, и после полной оплаты отправляю готовый файл.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-header">Какие у тебя сроки выполнения одного видео?<div class="faq-icon"></div></div>
+        <div class="faq-content">
+          <p>Для коротких форматов (Shorts/Reels) — от 1 до 2 дней. Для полноценных YouTube-видео или сложного Motion Design — в среднем от 3 до 5 дней, в зависимости от объема исходников и загруженности.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-header">В каких программах ты работаешь?<div class="faq-icon"></div></div>
+        <div class="faq-content">
+          <p>Основной монтаж и саунд-дизайн я делаю в Adobe Premiere Pro. Для сложной графики, анимации и VFX использую Adobe After Effects. Также применяю Photoshop, Illustrator и различные ИИ-инструменты для улучшения качества.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-header">Можно ли вносить правки в готовое видео?<div class="faq-icon"></div></div>
+        <div class="faq-content">
+          <p>Да, конечно. В оговоренную стоимость уже входят 2 итерации бесплатных правок. Любые дальнейшие глобальные изменения или переделка концепции обсуждаются и оплачиваются отдельно.</p>
+        </div>
+      </div>
+    </div>
+
     <footer>
       <p class="subtext" style="font-size: 14px; margin: 0;">© 2024 XyronVFX. All rights reserved.</p>
       <a href="https://t.me/XyronAE" target="_blank">Канал портфолио в TG ↗</a>
@@ -591,6 +693,24 @@
       card.onclick = null;
       card.style.cursor = 'default';
     }
+
+    // --- Логика Аккордеона FAQ ---
+    document.querySelectorAll('.faq-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const isActive = item.classList.contains('active');
+        
+        // Закрываем все остальные (если нужно поведение как у аккордеона)
+        document.querySelectorAll('.faq-item').forEach(faq => {
+          faq.classList.remove('active');
+        });
+
+        // Если нажатый не был активен, открываем его
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
 
     // --- Логика Интерактивного Фона ---
     const canvas = document.getElementById('particle-canvas');
